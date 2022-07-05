@@ -2,25 +2,30 @@
 #include "Game.h"
 
 bool Running = true;
-short turns = 0;
+bool turns = false;
+short pairs = 18;
 
 int main()
 {
 	Init();
 	Render();
-	D_Render();
 	while (Running)
 	{
 		if (!Query())
 			continue;
-		turns++;
-		if (!Check() && turns > 1)
+		Render();
+		if (!Check() && turns)
 		{
 			Close();
 		}
-		std::cout << Check() << std::endl;
-		Render();
+		turns = !turns;
+		if (Check())
+			pairs--;
+		if (!pairs)
+		{
+			Win();
+			Running = false;
+		}
 		D_Render();
-		turns *= !(turns > 1);
 	}
 }

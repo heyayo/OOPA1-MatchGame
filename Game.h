@@ -9,3 +9,5 @@ void Close();
 void ResetMemory();
 bool Query();
 bool Check();
+void Win();
+

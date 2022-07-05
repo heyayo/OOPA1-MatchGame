@@ -6,11 +6,13 @@ char board[6][6];
 char boardvalue[6][6];
 int memory[2][2];
 bool match = false;
+int total = 0;
+int arow,acol;
 
 // Function to return a random number between the MIN and MAX ints specified, exclusive of the MAX
 int RandRange(int MIN, int MAX)
 {
-	return (((float)rand() / RAND_MAX) * (MAX-MIN)) + MIN;
+	return (((float)rand() / (float)RAND_MAX) * (MAX-MIN)) + MIN;
 }
 
 void Init()
@@ -31,23 +33,21 @@ void Init()
 	char boxes[18];
 
 	{
-		char memory[18];
+		char mem[18];
 		for (int i = 0; i < 18; i++)
 		{
 			short count = 0;
 			char slot = (char)RandRange(97, 122);
 			boxes[i] = slot;
-			memory[i] = slot;
+			mem[i] = slot;
 			for (int j = 0; j < 18; j++)
 			{
-				count += (boxes[i] == memory[j]);
+				count += (boxes[i] == mem[j]);
 			}
 			i -= (count > 1);
 		}
 	}
 
-	short count;
-	short memory[6];
 	for (int i = 0; i < 18; i++)
 	{
 		for (int j = 0; j < 2; j++)
@@ -69,9 +69,15 @@ void Render()
 {
 	for (int i = 0; i < 6; i++)
 	{
+		std::cout << '|';
 		for (int j = 0; j < 6; j++)
 		{
-			std::cout << board[i][j];
+			std::cout << board[i][j] << '|';
+		}
+		std::cout << std::endl;
+		for (int j = 0; j < 12; j++)
+		{
+			std::cout << '_';
 		}
 		std::cout << std::endl;
 	}
@@ -95,6 +101,7 @@ void Open(int row, int col)
 	memory[match][0] = row;
 	memory[match][1] = col;
 	match = !match;
+	total++;
 }
 
 bool Query()
@@ -104,18 +111,17 @@ bool Query()
 	std::cin >> row;
 	std::cout << "Which Column?" << std::endl;
 	std::cin >> col;
-	if (board[row][col] != ' ')
+	if (board[row - 1][col - 1] != ' ')
 	{
 		std::cout << "Card Already Open" << std::endl;
 		return false;
 	}
-	Open(row, col);
+	Open(row - 1, col - 1);
 	return true;
 }
 
 bool Check()
 {
-	std::cout << boardvalue[memory[0][0]][memory[0][1]] << boardvalue[memory[1][0]][memory[1][1]] << std::endl;
 	return (boardvalue[memory[0][0]][memory[0][1]] == boardvalue[memory[1][0]][memory[1][1]]);
 }
 
@@ -131,3 +137,9 @@ void ResetMemory()
 	memory[0][0] = -1; memory[0][1] = -1;
 	memory[1][0] = -2; memory[1][1] = -2;
 }
+
+void Win()
+{
+	std::cout << "You Win and Took a Total of " << total / 2 << " Turns to Finish" << std::endl;
+}
+
