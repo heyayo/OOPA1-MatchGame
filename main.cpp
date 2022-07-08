@@ -4,7 +4,7 @@
 // Basic Variables needed to run the game
 bool Running = true; // Says game is running
 bool turns = false; // Saves which card is being opened, the one to match or the first one
-short pairs = 18; // The amount of pairs needed to match
+short pairs = 3; // The amount of pairs needed to match
 
 int main()
 {

@@ -1,8 +1,11 @@
 #include <iostream>
 #include <random>
-#include <Windows.h>
 #include <string>
 #include "Game.hpp"
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 char board[6][6];
 char boardvalue[6][6];
@@ -12,7 +15,9 @@ int total = 0;
 int arow;
 unsigned int intSeed = 0;
 std::string seed;
+#ifdef _WIN32
 HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
 // Function to return a random number between the MIN and MAX ints specified, exclusive of the MAX
 float RandRange(float MIN, float MAX)
@@ -107,11 +112,17 @@ void Render()
 	system("cls");
 	#elif __linux__
 	// Linux Implementation
-	std::cout << "\033[3J\033[H";
+	system("clear");
 	#endif
 
+	for (int i = 0; i < 6; i++)
+	{
+		std::cout << " " << i;
+	}
+	std::cout << std::endl;
+
 	// Renders the top bar of the board UI
-	for (int j = 0; j < 12; j++)
+	for (int j = 0; j < 15; j++)
 	{
 		std::cout << '_';
 	}
@@ -120,6 +131,14 @@ void Render()
 	// Renders the rest of the board UI
 	for (int i = 0; i < 6; i++)
 	{
+		#ifdef _WIN32
+		SetConsoleTextAttribute(console, 9);
+		std::cout << j;
+		SetConsoleTextAttribute(console, 15);
+		#elif __linux__
+		std::cout << "\033[34m" << i << "\033[0m";
+		#endif
+
 		// The Pillar on the left
 		std::cout << '|';
 
@@ -147,11 +166,15 @@ void Render()
 			#elif __linux__ // Linux Implementation
 			if (memory[0][0] == i && memory[0][1] == j)
 			{
-				std::cout << "\033[92m" << board[i][j] << "\033[0m";
+				std::cout << "\033[32m" << board[i][j] << "\033[0m";
 			}
 			else if (memory[1][0] == i && memory[1][1] == j)
 			{
-				std::cout << "\033[96m" << board[i][j] << "\033[0m";
+				std::cout << "\033[36m" << board[i][j] << "\033[0m";
+			}
+			else
+			{
+				std::cout << board[i][j];
 			}
 			#endif
 			std::cout << '|';
@@ -164,7 +187,7 @@ void Render()
 		std::cout << std::endl;
 
 		// The splitting horizontal line of the board
-		for (int j = 0; j < 12; j++)
+		for (int j = 0; j < 15; j++)
 		{
 			std::cout << '_';
 		}
@@ -245,6 +268,8 @@ void Win()
 {
 	std::cout << "You Win and Took a Total of " << total / 2 << " Turns to Finish" << std::endl;
 	std::cout << "This Game was played with the Seed [" << seed << ']' << std::endl;
+#ifdef _WIN32
 	system("pause");
+#endif
 }
 
