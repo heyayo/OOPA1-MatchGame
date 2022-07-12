@@ -2,6 +2,8 @@
 #include <random>
 #include <string>
 #include "Game.hpp"
+#include "timer.h"
+#include "Frames.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -27,6 +29,10 @@ float RandRange(float MIN, float MAX)
 
 void SeedQuery()
 {
+	std::cout << "Please Full Screen Your Terminal For The Best Experience" << std::endl;
+	StopWatch timer;
+	timer.startTimer();
+	timer.waitUntil(2000);
 	std::cout << "Enter a Seed for the game" << std::endl;
 	std::getline(std::cin,seed);
 	for (int i = 0; i < seed.length(); i++)
@@ -133,7 +139,7 @@ void Render()
 	{
 		#ifdef _WIN32
 		SetConsoleTextAttribute(console, 9);
-		std::cout << j;
+		std::cout << i;
 		SetConsoleTextAttribute(console, 15);
 		#elif __linux__
 		std::cout << "\033[34m" << i << "\033[0m";
@@ -266,10 +272,25 @@ void ResetMemory()
 // This is a function despite being used once as it needs to access the 'total' variable
 void Win()
 {
-	std::cout << "You Win and Took a Total of " << total / 2 << " Turns to Finish" << std::endl;
-	std::cout << "This Game was played with the Seed [" << seed << ']' << std::endl;
+	StopWatch timer;
+	timer.startTimer();
+	std::string FrameArray[8] = {F1,F2,F3,F4,F5,F6,F7,F8};
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			std::cout << FrameArray[j];
+			std::cout << "You Win and Took a Total of " << total / 2 << " Turns to Finish" << std::endl;
+			std::cout << "This Game was played with the Seed [" << seed << ']' << std::endl;
+			timer.waitUntil(1000/2);
+			#ifdef _WIN32
+			system("cls");
+			#elif __linux__
+			system("clear");
+			#endif
+		}
+	}
 #ifdef _WIN32
 	system("pause");
 #endif
-}
-
+} 
