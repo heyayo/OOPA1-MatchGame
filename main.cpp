@@ -1,26 +1,33 @@
 #include <iostream>
 #include "Game.hpp"
-#include "Frames.hpp"
+#include "timer.hpp"
 
-#define _DEBUGV_ // Define to Enable Cheat Features
+//#define _DEBUGV_ // Uncomment to Enable Cheat Features
 
 // Basic Variables needed to run the game
 bool Running = true; // Says game is running
 bool turns = false; // Saves which card is being opened, the one to match or the first one
-short pairs = 1; // The amount of pairs needed to match
+short pairs = 18; // The amount of pairs needed to match
 
 int main()
 {
 	#ifdef _DEBUGV_
-	std::cout << "This compile has DEBUG enabled, you are only required to match " << pairs << " pairs to win" << std::endl;
+	std::cout << "This compile has DEBUG enabled" << std::endl << "You are required to match " << pairs << " pairs to win" << std::endl;
 	#endif
+	std::cout << "Please Full Screen Your Terminal For The Best Experience" << std::endl;
+	std::cout << "F11 or Maximize Button" << std::endl;
+	StopWatch timer;
+	timer.startTimer();
+	timer.waitUntil(2000);
 	SeedQuery(); // Ask User for Game Seed
 	Init(); // Intialize Game
+	ClearScreen();
 	Render(); // Perform the first render of the game
 	while (Running) // Game Loop
 	{
 		if (!Query()) // Query the player on the card to open
 			continue; // If the Query returns false, restart loop
+		ClearScreen();
 		Render();// Render if success
 		if (!Check() && turns) // Check if both cards are the same and if two cards have been opened
 		{

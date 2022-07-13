@@ -9,5 +9,6 @@ void Open(int row, int col);
 void Close();
 void ResetMemory();
 void Win();
+void ClearScreen();
 bool Query();
 bool Check();

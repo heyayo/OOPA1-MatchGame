@@ -2,7 +2,7 @@
 #include <random>
 #include <string>
 #include "Game.hpp"
-#include "timer.h"
+#include "timer.hpp"
 #include "Frames.hpp"
 
 #ifdef _WIN32
@@ -19,6 +19,7 @@ unsigned int intSeed = 0;
 std::string seed;
 #ifdef _WIN32
 HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+CONSOLE_FONT_INFOEX confont;
 #endif
 
 // Function to return a random number between the MIN and MAX ints specified, exclusive of the MAX
@@ -29,10 +30,6 @@ float RandRange(float MIN, float MAX)
 
 void SeedQuery()
 {
-	std::cout << "Please Full Screen Your Terminal For The Best Experience" << std::endl;
-	StopWatch timer;
-	timer.startTimer();
-	timer.waitUntil(2000);
 	std::cout << "Enter a Seed for the game" << std::endl;
 	std::getline(std::cin,seed);
 	for (int i = 0; i < seed.length(); i++)
@@ -46,6 +43,14 @@ void Init()
 {
 	// Seeds the randomizer used in the game
 	srand(intSeed);
+	confont.cbSize = sizeof(confont);
+	confont.dwFontSize.Y = 50;
+	confont.dwFontSize.X = 42;
+	confont.nFont = 0;
+	confont.FontFamily = FF_DONTCARE;
+	confont.FontWeight = FW_NORMAL;
+	SetCurrentConsoleFontEx(console, FALSE, &confont);
+	//SetConsoleDisplayMode(console, CONSOLE_FULLSCREEN_MODE, 0);
 
 	// Initializes the board array as empties
 	for (int i = 0; i < 6; i++)
@@ -112,20 +117,23 @@ void Init()
 // This function Renders the board
 void Render()
 {
-	// Clears the Console
+	// Column Numbering
+	std::cout << " "; // PADDING
 	#ifdef _WIN32
-	// WINDOWS Implementation
-	system("cls");
-	#elif __linux__
-	// Linux Implementation
-	system("clear");
-	#endif
-
 	for (int i = 0; i < 6; i++)
 	{
-		std::cout << " " << i;
+		SetConsoleTextAttribute(console, 14);
+		std::cout << " " << i + 1;
+		SetConsoleTextAttribute(console, 15);
 	}
 	std::cout << std::endl;
+	#elif __linux__
+	for (int i = 0; i < 6; i++)
+	{
+		std::cout << " " << i + 1;
+	}
+	std::cout << std::endl;
+	#endif
 
 	// Renders the top bar of the board UI
 	for (int j = 0; j < 15; j++)
@@ -137,12 +145,13 @@ void Render()
 	// Renders the rest of the board UI
 	for (int i = 0; i < 6; i++)
 	{
+		// Row Numbering
 		#ifdef _WIN32
 		SetConsoleTextAttribute(console, 9);
-		std::cout << i;
+		std::cout << i + 1;
 		SetConsoleTextAttribute(console, 15);
 		#elif __linux__
-		std::cout << "\033[34m" << i << "\033[0m";
+		std::cout << "\033[34m" << i + 1 << "\033[0m";
 		#endif
 
 		// The Pillar on the left
@@ -232,6 +241,7 @@ bool Query()
 	std::cout << "Which Row?" << std::endl; // Ask which row
 	std::cin >> row; // Get Row
 	arow = row - 1; // Save Arrow Position
+	ClearScreen();
 	Render(); // Render Mid Question to Render Arrow
 	std::cout << "Which Column?" << std::endl; // Ask which column
 	std::cin >> col; // Get Column
@@ -250,6 +260,10 @@ bool Query()
 // Check if both cards picked are the same
 bool Check()
 {
+	if (memory[0][0] < 0 || memory[1][0] < 0) // RESET CHECK
+	{
+		return false;
+	}
 	return (boardvalue[memory[0][0]][memory[0][1]] == boardvalue[memory[1][0]][memory[1][1]]);
 }
 
@@ -272,25 +286,45 @@ void ResetMemory()
 // This is a function despite being used once as it needs to access the 'total' variable
 void Win()
 {
-	StopWatch timer;
-	timer.startTimer();
-	std::string FrameArray[8] = {F1,F2,F3,F4,F5,F6,F7,F8};
-	for (int i = 0; i < 4; i++)
+	StopWatch timer; // Create a timer object
+	std::string FrameArray[8] = {F1,F2,F3,F4,F5,F6,F7,F8}; // Store the animation frames
+	for (int i = 0; i < 2; i++)
 	{
-		for (int j = 0; j < 8; j++)
+		for (int j = 0; j < 8; j++) // Repeat all 8 frames 4 times
 		{
-			std::cout << FrameArray[j];
+			// Clear the screen before showing a frame
+			#ifdef _WIN32
+			confont.dwFontSize.X = 12;
+			confont.dwFontSize.Y = 16;
+			SetCurrentConsoleFontEx(console,FALSE,&confont);
+			#endif
+			ClearScreen();
+			std::cout << FrameArray[j] << std::endl; // Show Frame
+			// Win Messages
 			std::cout << "You Win and Took a Total of " << total / 2 << " Turns to Finish" << std::endl;
 			std::cout << "This Game was played with the Seed [" << seed << ']' << std::endl;
+			std::cout << "Final Board" << std::endl;
+			Render();
+			// Animation Framerate set to 4 FPS
+			timer.startTimer();
 			timer.waitUntil(1000/2);
-			#ifdef _WIN32
-			system("cls");
-			#elif __linux__
-			system("clear");
-			#endif
 		}
 	}
+	std::cout << std::endl;
+	// If on Windows, pause the program before quitting
 #ifdef _WIN32
 	system("pause");
 #endif
-} 
+}
+
+void ClearScreen()
+{
+	// Clears the Console
+	#ifdef _WIN32
+	// WINDOWS Implementation
+	system("cls");
+	#elif __linux__
+	// Linux Implementation
+	system("clear");
+	#endif
+}

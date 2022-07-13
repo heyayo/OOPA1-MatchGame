@@ -1,5 +1,11 @@
 #ifdef _WIN32
-#include "timer.h"
+#include "timer.hpp"
+
+/*
+OpenGL Framework Timer Class
+The Windows Version is Written By Mr Stanley
+Linux Version adapted by me
+*/
 
 StopWatch::StopWatch()
 {    

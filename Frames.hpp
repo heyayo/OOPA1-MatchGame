@@ -1,5 +1,9 @@
 #include <string>
 
+/*
+extern String Variables that store the "Frames" of the Winning Animation
+*/
+
 extern std::string F1;
 extern std::string F2;
 extern std::string F3;
