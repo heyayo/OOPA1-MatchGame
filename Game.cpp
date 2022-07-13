@@ -32,7 +32,7 @@ void SeedQuery()
 {
 	std::cout << "Enter a Seed for the game" << std::endl;
 	std::getline(std::cin,seed);
-	for (int i = 0; i < seed.length(); i++)
+	for (unsigned int i = 0; i < seed.length(); i++)
 	{
 		intSeed += (int)seed[i];
 	}
